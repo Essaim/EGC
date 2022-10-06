@@ -1,0 +1,90 @@
+device: 2
+out_catagory: single
+
+data:
+  dataset: solar-energy
+  solar-energy:
+    node_fea_num: 0.7
+    DSGRN_Stage1:
+      batch_size: 64
+      scaler_id: standard
+      input_dim: 1
+      output_dim: 11
+      num_workers: 0
+    DSGRN_Stage2:
+      batch_size: 32
+      scaler_id: standard
+      input_dim: 1
+      output_dim: 11
+      num_workers: 0
+
+train:
+  end_epoch: 200
+  max_grad_norm: 5
+  early_stop_steps: 10
+
+optimizer:
+  name: Adam
+  Adam:
+    lr: 0.001
+    weight_decay: 0.0001
+    eps: 0.0000000001
+    amsgrad: true
+  RMSprop:
+    lr: 0.01
+    weight_decay: 0.001
+
+loss:
+  mask: 0
+  name: MSELoss
+
+model:
+  solar-energy:
+    DSGRN_Stage1:
+      n_pred: 12
+      hidden_size: 64
+      num_nodes: 170
+      hidden_size_st: 50
+      sample_num_st: 50
+      st_conv_method: repeat
+      fc_dim: 588384
+      n_supports: 1
+      k_hop: 3
+      n_rnn_layers: 1
+      input_dim: 1
+      output_dim: 1
+      cl_decay_steps: 1200
+    DSGRN_Stage2:
+      n_pred: 12
+      hidden_size: 64
+      hidden_size_st: 50
+      hidden_size_dy: 20
+      hidden_size_simple: 30
+      num_nodes: 170
+      sample_num_st: 50
+      sample_num_dy: 0
+      st_conv_method: repeat
+      dy_conv_method: normal
+      n_supports: 1
+      k_hop: 3
+      n_rnn_layers: 1
+      input_dim: 1
+      output_dim: 1
+      fc_dim: 588384
+      cl_decay_steps: 1200
+      trainer:
+        alfa: 0.3
+
+scheduler:
+  name: ReduceLROnPlateau
+  ReduceLROnPlateau:
+    factor: 0.2
+    patience: 5
+    threshold: 0.001
+    min_lr: 0.00000001
+  StepLR:
+    step_size: 10
+    gamma: 0.1
+  MultiStepLR:
+    milestones: [1, 5, 10, 15, 20]
+    gamma: 0.1

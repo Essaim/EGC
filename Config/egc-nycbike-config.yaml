@@ -1,0 +1,91 @@
+device: 2
+out_catagory: multi
+
+data:
+  dataset: NYCBike
+  NYCBike:
+    node_fea_num: 0.7
+    DSGRN_Stage1:
+      batch_size: 32
+      scaler_id: standard
+      input_dim: 2
+      output_dim: 2
+      num_workers: 0
+    DSGRN_Stage2:
+      batch_size: 8
+      scaler_id: standard
+      input_dim: 2
+      output_dim: 2
+      num_workers: 0
+
+train:
+  end_epoch: 200
+  max_grad_norm: 5
+  early_stop_steps: 10
+
+optimizer:
+  name: Adam
+  Adam:
+    lr: 0.001
+    weight_decay: 0.0001
+    eps: 0.0000000001
+    amsgrad: true
+  RMSprop:
+    lr: 0.01
+    weight_decay: 0.001
+
+loss:
+  mask: 0
+  name: MSELoss
+
+model:
+  NYCBike:
+    DSGRN_Stage1:
+      n_pred: 12
+      hidden_size: 64
+      num_nodes: 250
+      hidden_size_st: 50
+      sample_num_st: 40
+      st_conv_method: repeat
+      fc_dim: 97568
+      n_supports: 1
+      k_hop: 3
+      n_rnn_layers: 1
+      input_dim: 2
+      output_dim: 2
+      cl_decay_steps: 300
+    DSGRN_Stage2:
+      n_pred: 12
+      hidden_size: 64
+      hidden_size_st: 50
+      hidden_size_dy: 25
+      inputs_size_dy: 2
+      hidden_size_simple: 30
+      num_nodes: 250
+      sample_num_st: 40
+      sample_num_dy: 0
+      st_conv_method: repeat
+      dy_conv_method: normal
+      n_supports: 2
+      k_hop: 3
+      n_rnn_layers: 1
+      input_dim: 2
+      output_dim: 2
+      fc_dim: 97568
+      cl_decay_steps: 600
+      trainer:
+        alfa: 0.1
+
+scheduler:
+  name: ReduceLROnPlateau
+  ReduceLROnPlateau:
+    factor: 0.2
+    patience: 5
+    threshold: 0.001
+    min_lr: 0.00000001
+  StepLR:
+    step_size: 10
+    gamma: 0.1
+  MultiStepLR:
+    milestones: [1, 5, 10, 15, 20]
+    gamma: 0.1
